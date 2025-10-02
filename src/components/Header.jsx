@@ -3,7 +3,7 @@ import { FileText, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button.jsx';
 
-export default function Header() {
+export default function Header({ onLoginClick, user }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -58,15 +58,20 @@ export default function Header() {
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 group-hover:w-full transition-all duration-300" />
               </motion.a>
             ))}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
-            >
-              <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white">
-                تسجيل الدخول
-              </Button>
-            </motion.div>
+            {!user && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4 }}
+              >
+                <Button
+                  onClick={onLoginClick}
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                >
+                  تسجيل الدخول
+                </Button>
+              </motion.div>
+            )}
           </nav>
 
           {/* Mobile Menu Button */}
@@ -96,9 +101,17 @@ export default function Header() {
                 {item}
               </a>
             ))}
-            <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white">
-              تسجيل الدخول
-            </Button>
+            {!user && (
+              <Button
+                onClick={() => {
+                  onLoginClick();
+                  setMobileMenuOpen(false);
+                }}
+                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+              >
+                تسجيل الدخول
+              </Button>
+            )}
           </motion.div>
         )}
       </div>

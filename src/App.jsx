@@ -1,59 +1,113 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { LogOut, User } from 'lucide-react';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Tools from './components/Tools';
 import Footer from './components/Footer';
-import FileUploader from './components/FileUploader';
+import Login from './components/Login';
+import PDFConverter from './components/PDFConverter';
+import PDFTools from './components/PDFTools';
+import { getCurrentUser, logout, isAuthenticated } from './lib/auth';
+import { Button } from '@/components/ui/button.jsx';
 import './App.css';
 
 function App() {
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [user, setUser] = useState(null);
+  const [showLogin, setShowLogin] = useState(false);
 
-  const handleFileSelect = (file) => {
-    setSelectedFile(file);
-    console.log('Selected file:', file);
+  useEffect(() => {
+    const currentUser = getCurrentUser();
+    setUser(currentUser);
+  }, []);
+
+  const handleLoginSuccess = (userData) => {
+    setUser(userData);
+    setShowLogin(false);
+  };
+
+  const handleLogout = () => {
+    logout();
+    setUser(null);
+  };
+
+  const handleLoginClick = () => {
+    setShowLogin(true);
   };
 
   return (
     <div className="min-h-screen bg-black">
-      <Header />
-      <Hero />
-      
-      {/* File Upload Section */}
-      <section id="الأدوات" className="relative py-24 bg-black">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-                ابدأ الآن
-              </span>
-            </h2>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              ارفع ملفاتك وابدأ في معالجتها بسهولة
-            </p>
-          </motion.div>
+      {/* Login Modal */}
+      {showLogin && !user && (
+        <Login onSuccess={handleLoginSuccess} />
+      )}
 
-          <FileUploader
-            onFileSelect={handleFileSelect}
-            acceptedFileTypes={{
-              'application/pdf': ['.pdf'],
-              'text/plain': ['.txt'],
-              'application/msword': ['.doc'],
-              'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
-            }}
-          />
-        </div>
-      </section>
+      {/* User Info Bar */}
+      {user && (
+        <motion.div
+          initial={{ y: -100 }}
+          animate={{ y: 0 }}
+          className="fixed top-20 left-4 right-4 md:left-auto md:right-4 z-40 bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-3 flex items-center justify-between gap-3 max-w-xs"
+        >
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+              <User className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <p className="text-white text-sm font-semibold">{user.name}</p>
+              <p className="text-gray-400 text-xs">{user.email}</p>
+            </div>
+          </div>
+          <Button
+            onClick={handleLogout}
+            size="sm"
+            variant="ghost"
+            className="text-red-400 hover:text-red-300"
+          >
+            <LogOut className="w-4 h-4" />
+          </Button>
+        </motion.div>
+      )}
+
+      <Header onLoginClick={handleLoginClick} user={user} />
+      <Hero onGetStarted={handleLoginClick} />
+
+      {/* Main Content - Only show if logged in */}
+      {user ? (
+        <>
+          <PDFConverter />
+          <PDFTools />
+        </>
+      ) : (
+        <section className="relative py-24 bg-black">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+                  سجل دخولك للبدء
+                </span>
+              </h2>
+              <p className="text-xl text-gray-400 mb-8">
+                قم بتسجيل الدخول أو إنشاء حساب جديد للوصول إلى جميع أدوات معالجة PDF
+              </p>
+              <Button
+                onClick={handleLoginClick}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-lg px-8 py-6"
+              >
+                تسجيل الدخول الآن
+              </Button>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       <Tools />
-      
+
       {/* About Section */}
       <section id="حول" className="relative py-24 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { FileText, Sparkles, Zap, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button.jsx';
 
-export default function Hero() {
+export default function Hero({ onGetStarted }) {
   const features = [
     { icon: Zap, text: 'سريع وفعال', color: 'from-yellow-400 to-orange-400' },
     { icon: Shield, text: 'آمن ومشفر', color: 'from-green-400 to-emerald-400' },
@@ -93,6 +93,7 @@ export default function Hero() {
           >
             <Button
               size="lg"
+              onClick={onGetStarted}
               className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-lg px-8 py-6 group"
             >
               <span>ابدأ الآن</span>
@@ -108,6 +109,7 @@ export default function Hero() {
               size="lg"
               variant="outline"
               className="border-2 border-purple-500 text-purple-400 hover:bg-purple-500/10 text-lg px-8 py-6"
+              onClick={() => document.getElementById('حول')?.scrollIntoView({ behavior: 'smooth' })}
             >
               تعرف على المزيد
             </Button>
